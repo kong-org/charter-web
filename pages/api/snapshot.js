@@ -1,6 +1,6 @@
 import {fetchSignatures, compareSigs} from "../../arweaveFns";
 
-const CANONICAL = process.env.CANONICAL || "mJvuy-UJ1dP_30HYx1QJtGuNJDvTB2PWCd-Ebi1bUBE";
+const CANONICAL = process.env.CANONICAL || "hZ4YLIvvMpQwjjayyKVgn1UQzqzOW-BrQxheOfmLw9M";
 
 // See https://github.com/snapshot-labs/snapshot-strategies/blob/master/src/strategies/api-post/examples.json for expected JSON format
 export default async (req, res) => {
