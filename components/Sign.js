@@ -22,7 +22,7 @@ const customStyles = {
     width: "80vw",
     marginRight: "-50%",
     borderColor: "black",
-    borderRadius: "0.75em",
+    borderRadius: "0",
     padding: "0",
   },
 };
