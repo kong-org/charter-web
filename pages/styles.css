@@ -136,3 +136,7 @@ hr:after {
 .markdown-rte * {
   word-break: break-word;
 }
+
+.input-placeholder::placeholder {
+  color: #5d5960;
+}

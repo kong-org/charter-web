@@ -21,7 +21,7 @@ const customStyles = {
     bottom: "auto",
     width: "80vw",
     marginRight: "-50%",
-    borderColor: "transparent",
+    borderColor: "black",
     borderRadius: "0.75em",
     padding: "0",
   },
@@ -59,16 +59,16 @@ function SignScreen({
   loading,
 }) {
   return (
-    <div className="w-full h-full bg-gray-50">
+    <div className="w-full h-full bg-black">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full font-body pb-4">
-        <div className="w-full font-mono font-bold text-center py-3.5 bg-gray-wash text-gray-secondary border-b border-gray-detail font-bold">
+        <div className="w-full font-mono font-bold text-center py-4 bg-black text-white border-b border-kong-border">
           Sign the Charter
         </div>
-        <div className="pt-7 pb-4 px-8 bg-gray-50">
-          <p className="font-mono text-brown-20">Enter your name to sign:</p>
+        <div className="pt-7 pb-4 px-8 bg-black">
+          <p className="font-mono text-white">Enter your name to sign:</p>
           <div className="mt-6">
             <input
-              className="font-mono border border-gray-detail focus:outline-none w-full px-4 py-4"
+              className="input-placeholder text-white font-mono border border-kong-border bg-black focus:outline-none w-full px-4 py-5"
               type="text"
               {...register("name")}
               autoComplete="off"
@@ -76,7 +76,7 @@ function SignScreen({
               placeholder="Your name or alias"
             />
             <input
-              className="font-mono border-b border-l border-r border-gray-detail focus:outline-none w-full px-4 py-4"
+              className="input-placeholder text-white font-mono border-b border-l border-r border-kong-border bg-black focus:outline-none w-full px-4 py-4"
               type="text"
               {...register("handle")}
               autoComplete="off"
@@ -87,7 +87,7 @@ function SignScreen({
             <Button
               disabled={!window.ethereum}
               className={
-                "mt-5 px-6 py-2 bg-truegray-800 hover:text-gray-100 text-white text-sm sm:text-base font-mono" +
+                "mt-5 px-6 py-2 text-white text-sm sm:text-base font-mono" +
                 (window.ethereum ? "" : " opacity-60")
               }
               primary
