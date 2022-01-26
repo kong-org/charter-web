@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
-const CANONICAL = process.env.CANONICAL || "hZ4YLIvvMpQwjjayyKVgn1UQzqzOW-BrQxheOfmLw9M";
+const CANONICAL = process.env.CANONICAL || "1HhgIhjmE724U6SHVVhtIFLxGlCLy_h0O4SkA3IDhPY";
 
 function Header({ show }) {
   return (

@@ -3,19 +3,19 @@ import Button from './core/Button';
 
 
 const generateTweet = () => {
-  const str = `I just signed the KONG Land Charter. kong.land`;
+  const str = `I've ratified the kong.land Founding Charter.`;
   window.open(`https://twitter.com/intent/tweet?text=${encodeURI(str)}`);
 }
 
 export default function SocialProofConfirmation({ closeModal }) {
     return (
       <Box
-        title={<p className="text-center"> Your signature on the KONG Land Charter has been recorded. </p>}
+        title={<p className="text-center"> Your signature has been recorded. </p>}
         includeBorder={false}
         content={
             <div className="mt-8 mb-6">
                 <p className="font-mono mx-6 mb-6">
-                  Support KONG Land, Support the $CITIZENs.
+                  The $CITIZENs of KONG Land thank you for your service and support in ratifying this charter.
                 </p>
                 
                 <div className="mt-12 mb-3 text-center">
