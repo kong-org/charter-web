@@ -58,6 +58,7 @@ module.exports = {
           2021: "#FFE",
         },
         "kong-black": "#050604",
+        "kong-border": "#5D5960",
       },
     },
   },
