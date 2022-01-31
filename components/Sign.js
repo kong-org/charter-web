@@ -172,7 +172,7 @@ export default function Sign({ txId, charter }) {
         <>
           <div className="my-4">
             <p className="font-mono mb-6 text-left">
-              Review the <a className="underline" href="https://ipfs.io/ipfs/QmYpBTgbn1ADj8URjgh259XZMGsapHF8v71LThPQm1enmh">KONG Land Trustless Unincorporated Nonprofit Association Agreement</a> and sign the Founding Charter to become a voting $CITIZEN. Signatures will become part of this document's permanent history.
+              Review the <a className="underline" href="https://ipfs.io/ipfs/QmXd8HV6yK87M7fmszaXRULpM9cf1pMEuAg25UKskozACk">KONG Land Trustless Unincorporated Nonprofit Association Agreement</a> and sign the Founding Charter to become a voting $CITIZEN. Signatures will become part of this document's permanent history.
             </p>
             <div className="mt-4">
               <Button primary onClick={openModal}>
