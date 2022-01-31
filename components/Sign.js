@@ -175,9 +175,9 @@ export default function Sign({ txId, charter }) {
               Review the <a className="underline" href="https://ipfs.io/ipfs/QmYpBTgbn1ADj8URjgh259XZMGsapHF8v71LThPQm1enmh">KONG Land Trustless Unincorporated Nonprofit Association Agreement</a> and sign the Founding Charter to become a voting $CITIZEN. Signatures will become part of this document's permanent history.
             </p>
             <div className="mt-4">
-              <Button primary onClick={openModal} disabled="true">
+              <Button primary onClick={openModal}>
                 <MetaMaskIcon />
-                Signing Coming Soon
+                Sign
               </Button>
             </div>
           </div>
