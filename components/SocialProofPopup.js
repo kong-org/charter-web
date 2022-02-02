@@ -13,7 +13,6 @@ const generateTweet = (sig) => {
 export default function SocialProofPopup({ setStage, formData, sign }) {
   const [loading, setIsLoading] = React.useState(false);
   const [displayedError, setDisplayedError] = React.useState(false);
-
   const wrappedSign = () => {
     setIsLoading(true);
     sign()
