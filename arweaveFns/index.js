@@ -1,12 +1,12 @@
 // Arweave and Ethereum signing utilities.
-import Arweave from 'arweave';
-import {ethers} from "ethers";
+import Arweave from "arweave";
+import { ethers } from "ethers";
 
 function init() {
   return Arweave.init({
-    host: 'arweave.net',
+    host: "arweave.net",
     port: 443,
-    protocol: 'https',
+    protocol: "https",
     timeout: 20000,
     logging: false,
   });
@@ -23,45 +23,52 @@ const SIG_ADDR = "charter_sig_addr";
 const SIG_ISVERIFIED = "charter_sig_verified";
 const SIG_SIG = "charter_sig_signature";
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:8080";
+const SERVER_URL =
+  process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000";
 
-const jsonOrErrorHandler = async response => {
-  const resp = response.json()
+const jsonOrErrorHandler = async (response) => {
+  const resp = response.json();
   if (response.ok) {
     return resp;
   }
 
   if (resp) {
-    const error = await resp
-    throw new Error(error.message ?? error.errors[0].message)
+    const error = await resp;
+    throw new Error(error.message ?? error.errors[0].message);
   } else {
-    throw new Error('Internal server error')
+    throw new Error("Internal server error");
   }
+};
+
+export async function generateSignature(charter, getSigner) {
+  const signer = await getSigner();
+  if (!signer) {
+    throw new Error("Signer not found try connecting wallet again.");
+  }
+  return signer.signMessage(charter.trim());
 }
 
-export async function generateSignature(charter) {
-  if (!window.ethereum) {
-    throw new Error("No wallet found. Please install Metamask or another Web3 wallet provider.");
-  }
+const cleanHandle = (handle) =>
+  handle[0] === "@" ? handle.substring(1) : handle;
 
-  // Sign the charter. Any errors here should be handled by the caller.
-  await window.ethereum.request({ method: "eth_requestAccounts" });
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  return await signer.signMessage(charter.trim())
-}
-
-const cleanHandle = handle => handle[0] === "@" ? handle.substring(1) : handle;
-
-export async function signCharter(txId, name, userProvidedHandle, charter, signature) {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+export async function signCharter(
+  getSigner,
+  txId,
+  name,
+  userProvidedHandle,
+  charter,
+  signature
+) {
+  const signer = await getSigner();
   const address = await signer.getAddress();
 
   // Verify the signature, and print to console for convenience
-  const verifyingAddress = ethers.utils.verifyMessage(charter.trim(), signature);
+  const verifyingAddress = ethers.utils.verifyMessage(
+    charter.trim(),
+    signature
+  );
   if (verifyingAddress !== address) {
-    throw new Error("Signature mismatch")
+    throw new Error("Signature mismatch");
   }
 
   const formData = new URLSearchParams({
@@ -72,32 +79,33 @@ export async function signCharter(txId, name, userProvidedHandle, charter, signa
   });
 
   await fetch(`${SERVER_URL}/sign/${txId}`, {
-    method: 'post',
+    method: "post",
     body: formData,
-  }).then(jsonOrErrorHandler)
+  }).then(jsonOrErrorHandler);
 }
-
 export async function verifyTwitter(sig, handle) {
   const formData = new URLSearchParams({
     address: sig,
   });
 
   return fetch(`${SERVER_URL}/verify/${cleanHandle(handle)}`, {
-    method: 'post',
+    method: "post",
     body: formData,
-  }).then(jsonOrErrorHandler)
+  }).then(jsonOrErrorHandler);
 }
 
-{/* 
+{
+  /* 
 Transactions are mined into Arweave blocks in 60 mins
 So signature query order is roughly buckets by that
-*/}
+*/
+}
 export async function fetchSignatures(txId) {
-  const req = await fetch('https://arweave.net/graphql', {
-    method: 'POST',
+  const req = await fetch("https://arweave.net/graphql", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      "Content-Type": "application/json",
+      Accept: "application/json",
     },
     body: JSON.stringify({
       query: `
@@ -134,31 +142,33 @@ export async function fetchSignatures(txId) {
           }
         }
       }
-      `
-    })
+      `,
+    }),
   }).then(jsonOrErrorHandler);
 
   const safeTag = (node, tagName, defaultValue) => {
-    const tag = node.tags.find(tag => tag.name === tagName)
+    const tag = node.tags.find((tag) => tag.name === tagName);
     return tag ? tag.value : defaultValue;
-  }
+  };
 
-  return req.data.transactions.edges.flatMap(nodeItem => {
+  return req.data.transactions.edges.flatMap((nodeItem) => {
     const cursor = nodeItem.cursor;
     const n = nodeItem.node;
     const sig = safeTag(n, SIG_ADDR, "UNKWN");
     const handle = safeTag(n, SIG_HANDLE, "UNSIGNED");
-    const verified = safeTag(n, SIG_ISVERIFIED, 'false') === 'true'
+    const verified = safeTag(n, SIG_ISVERIFIED, "false") === "true";
 
-    return [{
-      CURSOR: cursor,
-      SIG_ID: n.id,
-      SIG_ADDR: sig,
-      SIG_NAME: safeTag(n, SIG_NAME, "Anonymous"),
-      SIG_HANDLE: handle === 'null' ? 'UNSIGNED' : handle,
-      SIG_ISVERIFIED: verified,
-      SIG_SIG: safeTag(n, SIG_SIG, "UNKWN"),
-    }];
+    return [
+      {
+        CURSOR: cursor,
+        SIG_ID: n.id,
+        SIG_ADDR: sig,
+        SIG_NAME: safeTag(n, SIG_NAME, "Anonymous"),
+        SIG_HANDLE: handle === "null" ? "UNSIGNED" : handle,
+        SIG_ISVERIFIED: verified,
+        SIG_SIG: safeTag(n, SIG_SIG, "UNKWN"),
+      },
+    ];
   });
 }
 
@@ -166,35 +176,34 @@ export function dedupe(sigs) {
   const unique_set = sigs.reduce((total, cur) => {
     if (!total.hasOwnProperty(cur.SIG_ADDR)) {
       // unique addr
-      total[cur.SIG_ADDR] = cur
+      total[cur.SIG_ADDR] = cur;
     } else {
-      const old = total[cur.SIG_ADDR]
+      const old = total[cur.SIG_ADDR];
       // dupe, can overwrite it current one is verified or old one is not verified
       if (cur.SIG_ISVERIFIED || !old.SIG_ISVERIFIED) {
-        total[cur.SIG_ADDR] = cur
+        total[cur.SIG_ADDR] = cur;
       }
     }
-    return total
-  }, {})
-  return Object.values(unique_set)
+    return total;
+  }, {});
+  return Object.values(unique_set);
 }
 
 export function compareSigs(snapAddrs, sigs) {
   const addrScores = [];
   snapAddrs.forEach((addr, index) => {
-
     // base score of 0 unless signed
-    var score = 0
+    var score = 0;
 
     // look for the address being mentioned at least once in the sigs
-    const checkAddr = obj => obj.SIG_ADDR === addr;
-    if (sigs.some(checkAddr)) score = 1
+    const checkAddr = (obj) => obj.SIG_ADDR === addr;
+    if (sigs.some(checkAddr)) score = 1;
 
     // create score json to match the api-post snapshot strategy
-    const scoreJSON = {"score":score, "address":addr}
-    addrScores.push(scoreJSON)
-  })
-  return addrScores
+    const scoreJSON = { score: score, address: addr };
+    addrScores.push(scoreJSON);
+  });
+  return addrScores;
 }
 
 export function sortSigs(sigs) {
@@ -235,31 +244,36 @@ export async function getCharter(txId) {
   }
 
   const transactionMetadata = await arweave.transactions.get(txId);
-  const tags = transactionMetadata.get('tags').reduce((prev, tag) => {
-    let key = tag.get('name', {decode: true, string: true});
-    prev[key] = tag.get('value', {decode: true, string: true});
+  const tags = transactionMetadata.get("tags").reduce((prev, tag) => {
+    let key = tag.get("name", { decode: true, string: true });
+    prev[key] = tag.get("value", { decode: true, string: true });
     return prev;
   }, {});
 
   // ensure correct type, return undefined otherwise
-  if (!(DOC_TYPE in tags) || !['document', 'charter'].includes(tags[DOC_TYPE])) {
+  if (
+    !(DOC_TYPE in tags) ||
+    !["document", "charter"].includes(tags[DOC_TYPE])
+  ) {
     return res;
   }
 
   // otherwise metadata seems correct, go ahead and fetch
   const blockId = txStatus.confirmed.block_indep_hash;
   const blockMeta = await arweave.blocks.get(blockId);
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const options = { year: "numeric", month: "long", day: "numeric" };
   const time = new Date(blockMeta.timestamp * 1000);
-  const data = JSON.parse(await arweave.transactions.getData(txId, {
-    decode: true,
-    string: true,
-  }));
-  data.body = data.document || data.charter // backwards compatability
+  const data = JSON.parse(
+    await arweave.transactions.getData(txId, {
+      decode: true,
+      string: true,
+    })
+  );
+  data.body = data.document || data.charter; // backwards compatability
 
   res.data = {
     ...data,
-    timestamp: time.toLocaleDateString('en-US', options),
+    timestamp: time.toLocaleDateString("en-US", options),
   };
 
   res.status = 200;
