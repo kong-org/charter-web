@@ -36,6 +36,7 @@ function Header({ show }) {
 
 function Body({ txId, data, status }) {
   if (status === 200) {
+    console.log(`status 200.`)
     const maybeSigs = useAsync(fetchSignatures, [txId]);
     const [clientSigList, setClientSigList] = React.useState([]);
 

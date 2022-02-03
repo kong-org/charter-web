@@ -92,9 +92,9 @@ export async function verifyTwitter(sig, handle) {
 Transactions are mined into Arweave blocks in 60 mins
 So signature query order is roughly buckets by that
 */}
-export async function fetchSignatures(txId) {
-  const req = await fetch('https://arweave.net/graphql', {
-    method: 'POST',
+export async function fetchSignatures(txId, prevTx) {
+  const req = await fetch("https://arweave.net/graphql", {
+    method: "POST",
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -105,6 +105,7 @@ export async function fetchSignatures(txId) {
         transactions(
           first: 50,
           sort: HEIGHT_ASC,
+          ${prevTx ? `after: "${prevTx}",` : ''}
           tags: [
             {
               name: "${DOC_TYPE}",
