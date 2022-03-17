@@ -194,8 +194,8 @@ export function compareSigs(snapAddrs, sigs) {
     // base score of 0 unless signed
     var score = 0;
 
-    // look for the address being mentioned at least once in the sigs -- compare as lower case.
-    const checkAddr = (obj) => (obj.SIG_ADDR).toLowerCase === (addr).toLowerCase;
+    // look for the address being mentioned at least once in the sigs
+    const checkAddr = (obj) => obj.SIG_ADDR === addr;
     if (sigs.some(checkAddr)) score = 1;
 
     // create score json to match the api-post snapshot strategy
