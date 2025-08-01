@@ -107,41 +107,44 @@ export async function fetchSignatures(txId, prevTx, quantity = 50) {
     },
     body: JSON.stringify({
       query: `
-      query {
-        transactions(
-          first: ${quantity},
-          sort: HEIGHT_ASC,
-          ${prevTx ? `after: "${prevTx}",` : ''}
-          tags: [
-            {
-              name: "${DOC_TYPE}",
-              values: ["signature"]
-            },
-            {
-              name: "${DOC_REF}",
-              values: ["${txId}"]
-            }
-          ],
-          owners: ["${ADMIN_ACCT}"],
-        ) {
-          edges {
-            cursor
-            node {
-              id
-              tags {
-                name
-                value
+        query {
+          transactions(
+            first: ${quantity},
+            sort: HEIGHT_ASC
+            ${prevTx ? `after: "${prevTx}"` : ''}
+            tags: [
+              {
+                name: "${DOC_TYPE}",
+                values: ["signature"]
+              },
+              {
+                name: "${DOC_REF}",
+                values: ["${txId}"]
               }
-              block {
+            ]
+            owners: ["${ADMIN_ACCT}"]
+          ) {
+            pageInfo {
+              hasNextPage
+            }
+            edges {
+              cursor
+              node {
+                id
+                tags {
+                  name
+                  value
+                }
+                block {
                   id
                   timestamp
                   height
+                }
               }
             }
           }
         }
-      }
-      `,
+      `
     }),
   }).then(jsonOrErrorHandler);
 
@@ -195,8 +198,9 @@ export function compareSigs(snapAddrs, sigs) {
     var score = 0;
 
     // look for the address being mentioned at least once in the sigs
-    const checkAddr = (obj) => obj.SIG_ADDR === addr;
+    const checkAddr = (obj) => obj.SIG_ADDR.toLowerCase() === addr.toLowerCase();
     if (sigs.some(checkAddr)) score = 1;
+    console.log(`"${addr}","${score}"`)
 
     // create score json to match the api-post snapshot strategy
     const scoreJSON = { score: score, address: addr };
